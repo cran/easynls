@@ -15,8 +15,7 @@ nlsfit(data, model = 1, start = c(a = 1, b = 1, c = 1, d = 1, e = 1))
   \item{data}{
 data is a data.frame
 
-The first column should contain the treatments (explanatory variable) and the 
-remaining columns the response variables.
+The first column should contain the treatments (explanatory variable) and the remaining columns the response variables.
 }
   \item{model}{
 define the model
@@ -57,14 +56,13 @@ start iterations values of model
 \value{
 Returns coefficients of the models, t test for coefficients, R squared, adjusted R squared, AIC, BIC and the maximum (or minimum) values of y and critical point of x
 }
-
 \references{
 KAPS, M. and LAMBERSON, W. R. Biostatistics for Animal Science: an introductory text. 2nd Edition. CABI Publishing, Wallingford, Oxfordshire, UK, 2009. 504p.
-
 }
 \author{
 Emmanuel Arnhold <emmanuelarnhold@yahoo.com.br>
 }
+
 
 
 
@@ -123,7 +121,8 @@ data2=data.frame(age,weight)
 nlsfit(data2, model=5, start=c(25,6,10,20))
 
 # using segmented regression to estimate a plateau
-# the requirement for the methionine in gain of turkey poults (Kaps and Lamberson, 2009)
+# the requirement for the methionine will be estimated measurements of gain of turkey poults 
+#(Kaps and Lamberson, 2009)
 
 methionine=c(80,85,90,95,100,105,110,115,120)
 gain=c(102,115,125,133,140,141,142,140,142)
@@ -143,10 +142,8 @@ nlsfit(data3, model=3)
 nlsfit(data3, model=4)
 
 # lactation curve
-
  milk=c(25,24,26,28,30,31,27,26,25,24,23,24,22,21,22,20,21,19,
 18,17,18,18,16,17,15,16,14)
-
  days=c(15,15,15,75,75,75,135,135,135,195,195,195,255,255,255,
 315,315,315,375,375,375,435,435,435,495,495,495)
     
@@ -165,23 +162,11 @@ nlsfit(data5, model=12)
 
 # logistic bi-compartmental (gas production)
 time=c(0,12,24,36,48,60,72,84,96,108,120,144,168,192)
-gas=c(0.002,3.8,8,14.5,16,16.5,17,17.4,17.9,18.1,18.8,19,19.2,19.3)
+gas=c(0.002,3.8,8,14.5,16,16.5,17,17.4,17.9,18.1,18.8,
+19,19.2,19.3)
     
 data6=data.frame(time,gas)
 
 nlsfit(data6, model=13, start=c(19,4,0.025,0.004,5))
-
-# various growth curves
-
-weightx1=c(280,340,430,480,550,580,590,600,590,600)
-weightx2=c(278,330,421,450,520,540,551,581,579,580)
-weightx3=c(291,368,460,499,565,572,573,572,573,573)
-age=c(8,12,24,36,48,60,72,84,96,108)
-
-data7=data.frame(age, weightx1,weightx2, weightx3)
-
-# logistic
-nlsfit(data7, model=7, start=c(600,4,0.05))
-
 }
 

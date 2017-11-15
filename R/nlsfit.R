@@ -34,7 +34,7 @@ function(data, model=1, start=c(a=1,b=1,c=1,d=1, e=1)){
                       c1 = coef(ml)[[1]]
                       c2 = coef(ml)[[2]]
                       m=nls(y~a+b*x, data=data, start=list(a=c1,b=c2),control = nls.control(maxiter = 6000)) 
-                      c=coef(m); s=summary(m); a=c[1];b=c[2];l=c(a,b,summary(m)[11][[1]][7], summary(m)[11][[1]][8], R2(m), R3(m),AIC(m), BIC(m)); l=round(l,4);l=as.data.frame(l)
+                      c=coef(m); s=summary(m); a=c[1];b=c[2];l=c(a,b,summary(m)[11][[1]][7], summary(m)[11][[1]][8], R2(m), R3(m),AIC(m), BIC(m)); l=round(l,8);l=as.data.frame(l)
                       rownames(l)=c("coefficient a", "coefficient b", 
                                     "p-value t.test for a", "p-value t.test for b", 
                                     "r-squared", "adjusted r-squared", 
@@ -49,7 +49,7 @@ function(data, model=1, start=c(a=1,b=1,c=1,d=1, e=1)){
                       c4 = coef(mq)[[2]]
                       c5 = coef(mq)[[3]]
                       m=nls(y~a+b*x+c*x^2, data=data, start=list(a=c3,b=c4,c=c5),control = nls.control(maxiter = 6000));c=coef(m); s=summary(m); a=c[1];b=c[2];c=c[3];pm = a - (b^2)/(4 * c)
-                      pc = -0.5 * b/c; l=c(a,b,c,summary(m)[11][[1]][10], summary(m)[11][[1]][11], summary(m)[11][[1]][12], R2(m), R3(m),AIC(m), BIC(m), pm,pc); l=round(l,4);l=as.data.frame(l)
+                      pc = -0.5 * b/c; l=c(a,b,c,summary(m)[11][[1]][10], summary(m)[11][[1]][11], summary(m)[11][[1]][12], R2(m), R3(m),AIC(m), BIC(m), pm,pc); l=round(l,8);l=as.data.frame(l)
                       rownames(l)=c("coefficient a", "coefficient b", 
                                     "coefficient c", "p-value t.test for a", "p-value t.test for b", 
                                     "p-value t.test for c", "r-squared", "adjusted r-squared", 
@@ -57,7 +57,7 @@ function(data, model=1, start=c(a=1,b=1,c=1,d=1, e=1)){
                       return(l)
     }
     
-    # linear plateau
+   # linear plateau
     f3=function(data){names(data) = c("x", "y")
                       ml = lm(data[, 2] ~ data[, 1])
                       mq = lm(data[, 2] ~ data[, 1] + I(data[, 1]^2))
@@ -67,10 +67,18 @@ function(data, model=1, start=c(a=1,b=1,c=1,d=1, e=1)){
                       c4 = coef(mq)[[2]]
                       c5 = coef(mq)[[3]]
                       pc = -0.5 * c4/c5
-                      m <- nls(y ~ a + b * (x - c) * (x <= c), start = list(a = c1, 
-                                                                            b = c2, c = pc), data = data, control = nls.control(maxiter = 6000))
+			ff=function(x){c3+c4*x+c5*x^2}
+			pp=ff(pc)
+			a=start[1]
+			b=start[2]
+			c=start[3]
+			a11=ifelse(a==1,pp,a)
+			b11=ifelse(b==1,c2,b)
+			c11=ifelse(c==1,pc,c)
+		        m <- nls(y ~ a + b * (x - c) * (x <= c), start = list(a = a11, 
+                                                                        b = b11, c = c11), data = data, control = nls.control(maxiter = 6000))
                       c=coef(m); a=c[1];b=c[2];c=c[3]
-                      l=c(a,b,c,summary(m)[11][[1]][10], summary(m)[11][[1]][11], summary(m)[11][[1]][12], R2(m), R3(m),AIC(m), BIC(m), a,c); l=round(l,4);l=as.data.frame(l)
+                      l=c(a,b,c,summary(m)[11][[1]][10], summary(m)[11][[1]][11], summary(m)[11][[1]][12], R2(m), R3(m),AIC(m), BIC(m), a,c); l=round(l,8);l=as.data.frame(l)
                       rownames(l)=c("coefficient a", "coefficient b", 
                                     "coefficient c", "p-value t.test for a", "p-value t.test for b", 
                                     "p-value t.test for c", "r-squared", "adjusted r-squared", 
@@ -79,20 +87,30 @@ function(data, model=1, start=c(a=1,b=1,c=1,d=1, e=1)){
     }
     
     
+    
     # quadratic plateau
     f4=function(data){names(data) = c("x", "y")
                       mq = lm(data[, 2] ~ data[, 1] + I(data[, 1]^2))
                       c3 = coef(mq)[[1]]
                       c4 = coef(mq)[[2]]
                       c5 = coef(mq)[[3]]
+			
+			a=start[1]
+			b=start[2]
+			c=start[3]
+			a11=ifelse(a==1,c3,a)
+			b11=ifelse(b==1,c4,b)
+			c11=ifelse(c==1,c5,c)
+
+
                       m <- nls(y ~ (a + b * x + c * I(x^2)) * (x <= -0.5 * 
                                                                    b/c) + (a + I(-b^2/(4 * c))) * (x > -0.5 * b/c), 
-                               start = list(a = c3, b = c4, c = c5), data = data, 
+                               start = list(a = a11, b = b11, c = c11), data = data, 
                                control = nls.control(maxiter = 6000))
                       c=coef(m); a=c[1];b=c[2];c=c[3]
                       pmm = (a + I(-b^2/(4 * c)))
                       pcc = -0.5 * b/c
-                      l=c(a,b,c,summary(m)[11][[1]][10], summary(m)[11][[1]][11], summary(m)[11][[1]][12], R2(m), R3(m),AIC(m), BIC(m), pmm,pcc); l=round(l,4);l=as.data.frame(l)
+                      l=c(a,b,c,summary(m)[11][[1]][10], summary(m)[11][[1]][11], summary(m)[11][[1]][12], R2(m), R3(m),AIC(m), BIC(m), pmm,pcc); l=round(l,8);l=as.data.frame(l)
                       rownames(l)=c("coefficient a", "coefficient b", 
                                     "coefficient c", "p-value t.test for a", "p-value t.test for b", 
                                     "p-value t.test for c", "r-squared", "adjusted r-squared", 
@@ -104,7 +122,7 @@ function(data, model=1, start=c(a=1,b=1,c=1,d=1, e=1)){
     f5=function(data){names(data) = c("x", "y")     
                       fp=function(a,b,c,x,d){ifelse(x>=d,(a-c*d)+(b+c)*x, a+b*x)}
                       m=nls(y~fp(a,b,c,x,d), start=list(a=s[1],b=s[2],c=s[3], d=s[4]), data=data,control = nls.control(maxiter = 6000));c=coef(m); a=c[1];b=c[2];c1=c;c=c[3];d=c1[4]
-                      l=c(a,b,c,d,summary(m)[11][[1]][13], summary(m)[11][[1]][14], summary(m)[11][[1]][15],summary(m)[11][[1]][16], R2(m), R3(m),AIC(m), BIC(m)); l=round(l,4);l=as.data.frame(l)
+                      l=c(a,b,c,d,summary(m)[11][[1]][13], summary(m)[11][[1]][14], summary(m)[11][[1]][15],summary(m)[11][[1]][16], R2(m), R3(m),AIC(m), BIC(m)); l=round(l,8);l=as.data.frame(l)
                       rownames(l)=c("coefficient a", "coefficient b", 
                                     "coefficient c","coefficient d", "p-value t.test for a", "p-value t.test for b", 
                                     "p-value t.test for c", "p-value t.test for d","r-squared", "adjusted r-squared", 
@@ -115,7 +133,7 @@ function(data, model=1, start=c(a=1,b=1,c=1,d=1, e=1)){
     # exponential
     f6=function(data){names(data) = c("x", "y")
                       m=nls(y~a*exp(b*x) ,start=list(a=s[1],b=s[2]),data=data,control = nls.control(maxiter = 6000));c=coef(m); a=c[1];b=c[2]
-                      l=c(a,b,summary(m)[11][[1]][7], summary(m)[11][[1]][8], R2(m), R3(m),AIC(m), BIC(m)); l=round(l,4);l=as.data.frame(l)
+                      l=c(a,b,summary(m)[11][[1]][7], summary(m)[11][[1]][8], R2(m), R3(m),AIC(m), BIC(m)); l=round(l,8);l=as.data.frame(l)
                       rownames(l)=c("coefficient a", "coefficient b", 
                                     "p-value t.test for a", "p-value t.test for b", 
                                     "r-squared", "adjusted r-squared", 
@@ -125,7 +143,7 @@ function(data, model=1, start=c(a=1,b=1,c=1,d=1, e=1)){
     
     # logistic model
     f7=function(data){names(data) = c("x", "y") 
-                      m=nls(y~a*(1+b*(exp(-c*x)))^-1, data=data, start=list(a=s[1],b=s[2],c=s[3]),control = nls.control(maxiter = 6000));c=coef(m); s=summary(m); a=c[1];b=c[2];c=c[3]; l=c(a,b,c,summary(m)[11][[1]][10], summary(m)[11][[1]][11], summary(m)[11][[1]][12], R2(m), R3(m),AIC(m), BIC(m)); l=round(l,4);l=as.data.frame(l)
+                      m=nls(y~a*(1+b*(exp(-c*x)))^-1, data=data, start=list(a=s[1],b=s[2],c=s[3]),control = nls.control(maxiter = 6000));c=coef(m); s=summary(m); a=c[1];b=c[2];c=c[3]; l=c(a,b,c,summary(m)[11][[1]][10], summary(m)[11][[1]][11], summary(m)[11][[1]][12], R2(m), R3(m),AIC(m), BIC(m)); l=round(l,8);l=as.data.frame(l)
                       rownames(l)=c("coefficient a", "coefficient b", 
                                     "coefficient c", "p-value t.test for a", "p-value t.test for b", 
                                     "p-value t.test for c", "r-squared", "adjusted r-squared", 
@@ -135,7 +153,7 @@ function(data, model=1, start=c(a=1,b=1,c=1,d=1, e=1)){
     
     # Von Bertalanffy model
     f8=function(data){names(data) = c("x", "y") 
-                      m=nls(y~a*(1-b*(exp(-c*x)))^3, data=data, start=list(a=s[1],b=s[2],c=s[3]),control = nls.control(maxiter = 6000));c=coef(m); s=summary(m); a=c[1];b=c[2];c=c[3]; l=c(a,b,c,summary(m)[11][[1]][10], summary(m)[11][[1]][11], summary(m)[11][[1]][12], R2(m), R3(m),AIC(m), BIC(m)); l=round(l,4);l=as.data.frame(l)
+                      m=nls(y~a*(1-b*(exp(-c*x)))^3, data=data, start=list(a=s[1],b=s[2],c=s[3]),control = nls.control(maxiter = 6000));c=coef(m); s=summary(m); a=c[1];b=c[2];c=c[3]; l=c(a,b,c,summary(m)[11][[1]][10], summary(m)[11][[1]][11], summary(m)[11][[1]][12], R2(m), R3(m),AIC(m), BIC(m)); l=round(l,8);l=as.data.frame(l)
                       rownames(l)=c("coefficient a", "coefficient b", 
                                     "coefficient c", "p-value t.test for a", "p-value t.test for b", 
                                     "p-value t.test for c", "r-squared", "adjusted r-squared", 
@@ -145,7 +163,7 @@ function(data, model=1, start=c(a=1,b=1,c=1,d=1, e=1)){
     
     # Brody model
     f9=function(data){names(data) = c("x", "y") 
-                      m=nls(y~a*(1-b*(exp(-c*x))), data=data, start=list(a=s[1],b=s[2],c=s[3]),control = nls.control(maxiter = 6000));c=coef(m); s=summary(m); a=c[1];b=c[2];c=c[3]; l=c(a,b,c,summary(m)[11][[1]][10], summary(m)[11][[1]][11], summary(m)[11][[1]][12], R2(m), R3(m),AIC(m), BIC(m)); l=round(l,4);l=as.data.frame(l)
+                      m=nls(y~a*(1-b*(exp(-c*x))), data=data, start=list(a=s[1],b=s[2],c=s[3]),control = nls.control(maxiter = 6000));c=coef(m); s=summary(m); a=c[1];b=c[2];c=c[3]; l=c(a,b,c,summary(m)[11][[1]][10], summary(m)[11][[1]][11], summary(m)[11][[1]][12], R2(m), R3(m),AIC(m), BIC(m)); l=round(l,8);l=as.data.frame(l)
                       rownames(l)=c("coefficient a", "coefficient b", 
                                     "coefficient c", "p-value t.test for a", "p-value t.test for b", 
                                     "p-value t.test for c", "r-squared", "adjusted r-squared", 
@@ -155,7 +173,7 @@ function(data, model=1, start=c(a=1,b=1,c=1,d=1, e=1)){
     
     # Gompertz model
     f10=function(data){names(data) = c("x", "y") 
-                       m=nls(y~a*exp(-b*exp(-c*x)), data=data, start=list(a=s[1],b=s[2],c=s[3]),control = nls.control(maxiter = 6000));c=coef(m); s=summary(m); a=c[1];b=c[2];c=c[3]; l=c(a,b,c,summary(m)[11][[1]][10], summary(m)[11][[1]][11], summary(m)[11][[1]][12], R2(m), R3(m),AIC(m), BIC(m)); l=round(l,4);l=as.data.frame(l)
+                       m=nls(y~a*exp(-b*exp(-c*x)), data=data, start=list(a=s[1],b=s[2],c=s[3]),control = nls.control(maxiter = 6000));c=coef(m); s=summary(m); a=c[1];b=c[2];c=c[3]; l=c(a,b,c,summary(m)[11][[1]][10], summary(m)[11][[1]][11], summary(m)[11][[1]][12], R2(m), R3(m),AIC(m), BIC(m)); l=round(l,8);l=as.data.frame(l)
                        rownames(l)=c("coefficient a", "coefficient b", 
                                      "coefficient c", "p-value t.test for a", "p-value t.test for b", 
                                      "p-value t.test for c", "r-squared", "adjusted r-squared", 
@@ -165,7 +183,7 @@ function(data, model=1, start=c(a=1,b=1,c=1,d=1, e=1)){
     
     # lactation curve
     f11=function(data){names(data) = c("x", "y") 
-                       m=nls(y~(a*x^b)*exp(-c*x), data=data, start=list(a=s[1],b=s[2],c=s[3]),control = nls.control(maxiter = 6000));c=coef(m); s=summary(m); a=c[1];b=c[2];c=c[3]; pm=a*(b/c)^b*exp(-b);pc=b/c;l=c(a,b,c,summary(m)[11][[1]][10], summary(m)[11][[1]][11], summary(m)[11][[1]][12], R2(m), R3(m),AIC(m), BIC(m), pm,pc); l=round(l,4);l=as.data.frame(l)
+                       m=nls(y~(a*x^b)*exp(-c*x), data=data, start=list(a=s[1],b=s[2],c=s[3]),control = nls.control(maxiter = 6000));c=coef(m); s=summary(m); a=c[1];b=c[2];c=c[3]; pm=a*(b/c)^b*exp(-b);pc=b/c;l=c(a,b,c,summary(m)[11][[1]][10], summary(m)[11][[1]][11], summary(m)[11][[1]][12], R2(m), R3(m),AIC(m), BIC(m), pm,pc); l=round(l,8);l=as.data.frame(l)
                        rownames(l)=c("coefficient a", "coefficient b", 
                                      "coefficient c", "p-value t.test for a", "p-value t.test for b", 
                                      "p-value t.test for c", "r-squared", "adjusted r-squared", 
@@ -183,7 +201,7 @@ function(data, model=1, start=c(a=1,b=1,c=1,d=1, e=1)){
     
     # ruminal degradation curve
     f12=function(data){names(data) = c("x", "y") 
-                       m=nls(y ~ a + b * (1 - exp(-c * x)), data=data, start=list(a=20,b=60,c=0.05),control = nls.control(maxiter = 6000));c=coef(m); s=summary(m); a=c[1];b=c[2];c=c[3]; l=c(a,b,c,summary(m)[11][[1]][10], summary(m)[11][[1]][11], summary(m)[11][[1]][12], R2(m), R3(m),AIC(m), BIC(m)); l=round(l,4);l=as.data.frame(l)
+                       m=nls(y ~ a + b * (1 - exp(-c * x)), data=data, start=list(a=20,b=60,c=0.05),control = nls.control(maxiter = 6000));c=coef(m); s=summary(m); a=c[1];b=c[2];c=c[3]; l=c(a,b,c,summary(m)[11][[1]][10], summary(m)[11][[1]][11], summary(m)[11][[1]][12], R2(m), R3(m),AIC(m), BIC(m)); l=round(l,8);l=as.data.frame(l)
                        rownames(l)=c("coefficient a", "coefficient b", 
                                      "coefficient c", "p-value t.test for a", "p-value t.test for b", 
                                      "p-value t.test for c", "r-squared", "adjusted r-squared", 
@@ -202,7 +220,7 @@ function(data, model=1, start=c(a=1,b=1,c=1,d=1, e=1)){
     # logistico bicompartimental
     
     f13=function(data){names(data) = c("x", "y") 
-                       m=nls(y~(a/(1+exp(2-4*c*(x-e))))+(b/(1+exp(2-4*d*(x-e)))), start=list(a=s[1],b=s[2],c=s[3],d=s[4],e=s[5]), data=data,control = nls.control(maxiter = 6000));cc=coef(m); s=summary(m); a=cc[1];b=cc[2];c=cc[3];d=cc[4];e=cc[5]; l=c(a,b,c,d,e,summary(m)[11][[1]][16], summary(m)[11][[1]][17], summary(m)[11][[1]][18],summary(m)[11][[1]][19],summary(m)[11][[1]][20], R2(m), R3(m),AIC(m), BIC(m)); l=round(l,4);l=as.data.frame(l)
+                       m=nls(y~(a/(1+exp(2-4*c*(x-e))))+(b/(1+exp(2-4*d*(x-e)))), start=list(a=s[1],b=s[2],c=s[3],d=s[4],e=s[5]), data=data,control = nls.control(maxiter = 6000));cc=coef(m); s=summary(m); a=cc[1];b=cc[2];c=cc[3];d=cc[4];e=cc[5]; l=c(a,b,c,d,e,summary(m)[11][[1]][16], summary(m)[11][[1]][17], summary(m)[11][[1]][18],summary(m)[11][[1]][19],summary(m)[11][[1]][20], R2(m), R3(m),AIC(m), BIC(m)); l=round(l,8);l=as.data.frame(l)
                        rownames(l)=c("coefficient a", "coefficient b", "coefficient c","coefficient d","coefficient e",
                                      "p-value t.test for a", "p-value t.test for b", 
                                      "p-value t.test for c","p-value t.test for d","p-value t.test for e" ,"r-squared", "adjusted r-squared", 

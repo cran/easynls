@@ -1,7 +1,7 @@
-0ea33d755e28c9df43c1a90256b082b1 *DESCRIPTION
-8b54e5a89fbda3af5e077053d40bec76 *NAMESPACE
-b6e07038b525cdf8814fbcb6d7bb1e02 *R/nlsfit.R
-31216b0af4c9abef769301f2c4a1ad6d *R/nlsplot.R
-147611a120b1e6f97533d66bfd462e39 *man/easynls-package.Rd
-3fbaa307f0c473add2385741da8a8fac *man/nlsfit.Rd
-fed25676c74a6f3e667f3f7dc69bc117 *man/nlsplot.Rd
+ff8cfbacd8479d24ddb5435d4635c125 *DESCRIPTION
+76803628a917a4218e76054ee0f36574 *NAMESPACE
+4dece198c3f179dd12b81c1e87c5e07b *R/nlsfit.R
+0827d8cfc40154b1aa94d550d02a1a42 *R/nlsplot.R
+5d0a63b835d8dcc2653e483b8381ced3 *man/easynls-package.Rd
+a3e748e18838af30999c1b4795e8b800 *man/nlsfit.Rd
+c15d67cb819963490ab79167c077143b *man/nlsplot.Rd

@@ -1,5 +1,5 @@
 nlsplot <-
-function(data, model=1, start=c(a=1,b=1,c=1,d=1,e=1), xlab="Response Variable", ylab="Explanatory Variable", position=1)
+function(data, model=1, start=c(a=1,b=1,c=1,d=1,e=1), xlab="Explanatory Variable", ylab="Response Variable", position=1)
 {
     
     res=nlsfit(data=data, model=model, start=c(a=start[1],b=start[2],c=start[3],d=start[4],e=start[5]))
@@ -104,14 +104,9 @@ function(data, model=1, start=c(a=1,b=1,c=1,d=1,e=1), xlab="Response Variable", 
                             "  " * R^2 *" = " * r2, list(c1 = c1, c2 = c2, r2 = r2, c3 = c3, 
                                                          sin2 = sin2))
         e4 = substitute(y == c1 * sin2 * c2 * x * sin3 * c3 * 
-                            x^2 *  "  " * R^2 * " = " * r2, list(c1 = c1, c2 = c2, c3 = c3,sin2 =sin2, sin3=sin3, r2=r2)) 
-
-cn1=c1-(c3*c4)
-cn2=c2+c3
-
-        sin6 = ifelse(cn2 > 0, "+", "")                                             
-        e5 = substitute(atop(y1==c1*sin2*c2*x, 
-     y2==cn1*sin6*cn2*x )*"    "* R^2 * " = " * r2, list(c1 = c1, c2 = c2, c3 = c3,c4 = c4,cn1=cn1,cn2=cn2, r2 = r2, sin2 = sin2, sin3 = sin3,sin4 = sin4, sin6 = sin6))
+                            x^2 *  "  " * R^2 * " = " * r2, list(c1 = c1, c2 = c2, c3 = c3, 
+                                                                 r2 = r2, sin2 = sin2, sin3 = sin3))
+        e5 = substitute(y1==c1*sin2*c2*x* "     y2="*(c1-c3*sin4*c4)+(c2*sin3*c3)*x *"    "* R^2 * " = " * r2, list(c1 = c1, c2 = c2, c3 = c3,c4 = c4, r2 = r2, sin2 = sin2, sin3 = sin3,sin4 = sin4))
         
         e6 = substitute(y==c1*e^{c2*x}*"  " * R^2 * " = " * r2, list(c1 = c1, c2 = c2, 
                                                                      r2 = r2)) 
@@ -143,7 +138,7 @@ cn2=c2+c3
                                                            maxx), ylim = c(miny, maxy))
         plot(mod2[[model]], min(data[,1]), max(data[,1]), add = TRUE, 
              col = "dark blue", lty = 2)
-        legend(p,legend=eee,bty = "n", cex=0.9)
+        legend(p,legend=eee,bty = "n", cex=0.8)
     }
     ppp=ifelse(ncol(data)==2,2,1)
     lll=list(plot1,plot2)
